@@ -1,21 +1,6 @@
-# Configuración principal de NationTech
-settings:
-  # Activar debug para más información en consola
-  debug: false
+# Configuración general de NationTech
 
-  # Configuración de la base de datos
-  database:
-    # Tipo de almacenamiento: JSON, MySQL (futuro)
-    type: "JSON"
-
-  # Configuración de la GUI
-  gui:
-    # Actualizar GUI automáticamente cuando cambie el progreso
-    auto-update: true
-
-  # Configuración de recompensas
-  rewards:
-    # Entregar recompensas solo a líderes online
-    require-leader-online: true
-    # Guardar recompensas pendientes para entregar después
-    save-pending-rewards: false
+# URL del paquete de recursos que contiene las texturas personalizadas para la GUI.
+# Los jugadores recibirán una solicitud para descargarlo al entrar al servidor.
+# Deja esto en blanco para no usar ningún paquete de recursos.
+resource-pack-url: ""

@@ -1,26 +1,44 @@
+# El nombre de tu plugin, tal como aparecerá en la lista de plugins del servidor.
 name: NationTech
-version: 2.0
-main: com.tunacion.nationtech.NationTech
-api-version: 1.20
-author: [WOE_DEVS]
-description: Un sistema de árbol de tecnologías para naciones de Towny.
-depend: [Towny]
+# La versión, la tomaremos automáticamente del archivo pom.xml.
+version: 0.0.2-ALPHA-EXPERIMENTAL
+# La clase principal que el servidor debe cargar.
+main: com.github.nationTech.NationTech
+# La versión de la API de Paper para la que fue compilado.
+api-version: '1.20'
+# El autor o autores del plugin.
+authors: [TuNombre]
+# Una breve descripción de lo que hace el plugin.
+description: Un sistema de tecnologías para naciones de Towny.
 
+# Dependencias obligatorias. El plugin no se activará si Towny no está en el servidor.
+depend:
+  - Towny
+
+# Dependencias opcionales. El plugin intentará usarlas si existen, pero funcionará sin ellas.
+softdepend:
+  - AdvancedItems
+
+# Definición de los comandos del plugin.
 commands:
-  nationtech:
-    aliases: [nt, tech]
-    description: Comando principal de NationTech.
-  ntecha:
-    aliases: [nta]
+  # Comando para jugadores
+  ntc:
+    description: Abre el menú de tecnologías de la nación.
+    usage: "/ntc [nación]"
+    permission: nationtech.user
+  # Comandos de administración
+  ntca:
     description: Comandos de administración para NationTech.
+    usage: "/ntca <subcomando>"
+    permission: nationtech.admin
 
+# Definición de los permisos del plugin.
 permissions:
+  # Permiso base para usuarios.
+  nationtech.user:
+    description: Permite usar los comandos básicos de NationTech.
+    default: true
+  # Permiso base para administradores.
   nationtech.admin:
-    description: Permiso base para todos los comandos de admin.
-    children:
-      nationtech.admin.reload: true
-      nationtech.admin.activate: true
-  nationtech.admin.reload:
-    description: Permite usar /nta reload.
-  nationtech.admin.activate:
-    description: Permite usar /nta activate.
+    description: Permite usar los comandos de administración de NationTech.
+    default: op
