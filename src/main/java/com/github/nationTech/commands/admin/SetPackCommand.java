@@ -5,6 +5,9 @@ import com.github.nationTech.commands.SubCommand;
 import com.github.nationTech.utils.MessageManager;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SetPackCommand implements SubCommand {
 
     private final NationTech plugin = NationTech.getInstance();
@@ -37,6 +40,12 @@ public class SetPackCommand implements SubCommand {
         plugin.saveConfig();
 
         MessageManager.sendMessage(sender, "<green>¡URL del paquete de recursos actualizada!");
-        MessageManager.sendMessage(sender, "<gray>Los jugadores recibirán la solicitud al volver a entrar.");
+        MessageManager.sendMessage(sender, "<gray>Los nuevos jugadores recibirán la solicitud al entrar. Los actuales pueden reconectarse.");
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        // La URL es un texto libre, no necesita sugerencias.
+        return new ArrayList<>();
     }
 }

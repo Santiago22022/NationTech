@@ -1,31 +1,24 @@
 package com.github.nationTech.commands;
 
 import org.bukkit.command.CommandSender;
+import java.util.List;
 
 public interface SubCommand {
 
-    /**
-     * Se ejecuta cuando un jugador usa el subcomando.
-     * @param sender Quien ejecutó el comando.
-     * @param args Los argumentos que siguen al subcomando.
-     */
     void execute(CommandSender sender, String[] args);
 
-    /**
-     * El nombre del subcomando.
-     * @return El nombre.
-     */
     String getName();
 
-    /**
-     * La sintaxis del subcomando.
-     * @return La sintaxis.
-     */
     String getSyntax();
 
-    /**
-     * El permiso necesario para ejecutar el comando.
-     * @return El nodo de permiso.
-     */
     String getPermission();
+
+    /**
+     * --- MÉTODO NUEVO ---
+     * Proporciona una lista de sugerencias para el autocompletado.
+     * @param sender Quien ejecuta el comando.
+     * @param args Los argumentos actuales.
+     * @return Una lista de posibles completados.
+     */
+    List<String> onTabComplete(CommandSender sender, String[] args);
 }

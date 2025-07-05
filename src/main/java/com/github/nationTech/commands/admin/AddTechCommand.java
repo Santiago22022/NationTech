@@ -5,7 +5,12 @@ import com.github.nationTech.commands.SubCommand;
 import com.github.nationTech.managers.TechnologyManager;
 import com.github.nationTech.model.TechnologyType;
 import com.github.nationTech.utils.MessageManager;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AddTechCommand implements SubCommand {
 
@@ -18,7 +23,6 @@ public class AddTechCommand implements SubCommand {
 
     @Override
     public String getSyntax() {
-        // La sintaxis ahora incluye el argumento opcional [nombre_arbol]
         return "/ntca addtech <id> <fila> <col> <nombre> <padreId|null> <F|O> <requisitos> <icono> <beneficio> [nombre_arbol]";
     }
 
@@ -29,7 +33,6 @@ public class AddTechCommand implements SubCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        // El mínimo de argumentos es 9. El décimo (nombre_arbol) es opcional.
         if (args.length < 9) {
             MessageManager.sendMessage(sender, "<red>Argumentos insuficientes. Sintaxis:");
             MessageManager.sendRawMessage(sender, "<gray>" + getSyntax());
@@ -37,7 +40,6 @@ public class AddTechCommand implements SubCommand {
         }
 
         try {
-            // --- Parseo de Argumentos ---
             String id = args[0];
             int row = Integer.parseInt(args[1]);
             int column = Integer.parseInt(args[2]);
@@ -45,25 +47,19 @@ public class AddTechCommand implements SubCommand {
             String padreId = args[4].equalsIgnoreCase("null") ? null : args[4];
             TechnologyType tipo = args[5].equalsIgnoreCase("F") ? TechnologyType.FINAL : TechnologyType.OPEN;
             String requisitos = args[6];
-            String icono = args[7];
+            String icono = args[7].toUpperCase();
 
-            // Lógica para determinar el árbol y el beneficio
             String treeId = TechnologyManager.OFFICIAL_TREE_ID;
             int benefitEndIndex = args.length;
 
-            // Si hay 10 o más argumentos, el último PUEDE ser el nombre del árbol.
             if (args.length > 9) {
-                // Comprobamos si el último argumento es un nombre de árbol existente.
-                // Esta es una forma simple de diferenciarlo de parte del comando de beneficio.
-                // Una mejora futura podría ser usar un prefijo, ej: "tree:test".
                 String potentialTreeId = args[args.length - 1].toLowerCase();
                 if (technologyManager.getTreeNames().contains(potentialTreeId)) {
                     treeId = potentialTreeId;
-                    benefitEndIndex = args.length - 1; // El beneficio termina un argumento antes.
+                    benefitEndIndex = args.length - 1;
                 }
             }
 
-            // Unimos los argumentos restantes para formar el comando de beneficio.
             StringBuilder beneficioBuilder = new StringBuilder();
             for (int i = 8; i < benefitEndIndex; i++) {
                 beneficioBuilder.append(args[i]).append(" ");
@@ -75,7 +71,6 @@ public class AddTechCommand implements SubCommand {
                 return;
             }
 
-            // --- Creación de la Tecnología ---
             boolean success = technologyManager.createTechnology(treeId, id, row, column, nombre, padreId, tipo, requisitos, icono, beneficio);
 
             if (success) {
@@ -90,5 +85,56 @@ public class AddTechCommand implements SubCommand {
             MessageManager.sendMessage(sender, "<red>Ocurrió un error inesperado al procesar el comando.");
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        // La sintaxis es: <id> <fila> <col> <nombre> <padreId|null> <F|O> <req> <icono> <beneficio> [nombre_arbol]
+        TechnologyManager tm = NationTech.getInstance().getTechnologyManager();
+        List<String> completions = new ArrayList<>();
+        String input = args[args.length - 1].toLowerCase();
+
+        // Determina en qué árbol estamos trabajando para sugerir padres relevantes.
+        String treeId = TechnologyManager.OFFICIAL_TREE_ID;
+        if (args.length == 10) { // Si estamos escribiendo el nombre del árbol
+            String potentialTreeId = args[8].toLowerCase(); // El argumento antes del que estamos escribiendo
+            if (tm.getTreeNames().contains(potentialTreeId)) {
+                treeId = potentialTreeId;
+            }
+        } else if (args.length > 10) { // Si ya hemos escrito el nombre del árbol
+            String potentialTreeId = args[args.length - 2].toLowerCase();
+            if (tm.getTreeNames().contains(potentialTreeId)) {
+                treeId = potentialTreeId;
+            }
+        }
+
+        switch (args.length) {
+            case 5: // Sugerir <padreId|null>
+                completions.add("null");
+                completions.addAll(tm.getTechnologyTree(treeId).keySet());
+                break;
+            case 6: // Sugerir <F|O>
+                completions.add("F");
+                completions.add("O");
+                break;
+            case 8: // Sugerir <icono>
+                for (Material mat : Material.values()) {
+                    if (mat.isItem()) {
+                        completions.add(mat.name().toLowerCase());
+                    }
+                }
+                break;
+            case 10: // Sugerir [nombre_arbol]
+                completions.addAll(tm.getTreeNames());
+                break;
+            default:
+                // No hay sugerencias para otros argumentos como id, nombre, etc.
+                return new ArrayList<>();
+        }
+
+        // Filtra las sugerencias para que coincidan con lo que el usuario ya ha escrito
+        return completions.stream()
+                .filter(s -> s.toLowerCase().startsWith(input))
+                .collect(Collectors.toList());
     }
 }

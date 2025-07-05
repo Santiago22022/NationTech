@@ -6,6 +6,9 @@ import com.github.nationTech.managers.TechnologyManager;
 import com.github.nationTech.utils.MessageManager;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CreateDraftCommand implements SubCommand {
 
     @Override
@@ -13,7 +16,6 @@ public class CreateDraftCommand implements SubCommand {
         return "create";
     }
 
-    // --- CORRECCIÓN AQUÍ ---
     @Override
     public String getSyntax() {
         return "/ntca create <nombreBorrador>";
@@ -23,7 +25,6 @@ public class CreateDraftCommand implements SubCommand {
     public String getPermission() {
         return "nationtech.admin.create";
     }
-    // --- FIN DE LA CORRECCIÓN ---
 
     @Override
     public void execute(CommandSender sender, String[] args) {
@@ -45,5 +46,11 @@ public class CreateDraftCommand implements SubCommand {
         } else {
             MessageManager.sendMessage(sender, "<red>El borrador '<white>" + draftName + "</white>' ya existe.");
         }
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        // Este comando solo tiene un argumento de texto libre, no necesita sugerencias.
+        return new ArrayList<>();
     }
 }
